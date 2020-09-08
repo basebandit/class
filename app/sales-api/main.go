@@ -1,17 +1,28 @@
 package main
 
 import (
+	"context"
 	"expvar"
 	"fmt"
 	"log"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/ardanlabs/conf"
+	"github.com/ardanlabs/service/app/sales-api/handlers"
 	"github.com/pkg/errors"
 )
+
+/*
+Need to figure out timeouts for http service.
+You might want to reset your DB_HOST env var during test tear down.
+Service should start even without a DB running yet.
+symbols in profiles: https://github.com/golang/go/issues/23376 / https://github.com/google/pprof/pull/366
+*/
 
 // build is the git version of this program. It is set using build flags in the makefile.
 var build = "develop"
@@ -95,7 +106,54 @@ func run(log *log.Logger) error {
 		}
 	}()
 
-	select {}
+	// =========================================================================
+	// Start API Service
+
+	log.Println("main: Initializing API support")
+
+	// Make a channel to listen for an interrupt or terminate signal from the OS.
+	// Use a buffered channel because the signal package requires it.
+	shutdown := make(chan os.Signal, 1)
+	signal.Notify(shutdown, os.Interrupt, syscall.SIGTERM)
+
+	api := http.Server{
+		Addr:         cfg.Web.APIHost,
+		Handler:      handlers.API(build, shutdown, log),
+		ReadTimeout:  cfg.Web.ReadTimeout,
+		WriteTimeout: cfg.Web.WriteTimeout,
+	}
+
+	// Make a channel to listen for errors coming from the listener. Use a
+	// buffered channel so the goroutine can exit if we don't collect this error.
+	serverErrors := make(chan error, 1)
+
+	// Start the service listening for requests.
+	go func() {
+		log.Printf("main: API listening on %s", api.Addr)
+		serverErrors <- api.ListenAndServe()
+	}()
+
+	// =========================================================================
+	// Shutdown
+
+	// Blocking main and waiting for shutdown.
+	select {
+	case err := <-serverErrors:
+		return errors.Wrap(err, "server error")
+
+	case sig := <-shutdown:
+		log.Printf("main: %v : Start shutdown", sig)
+
+		// Give outstanding requests a deadline for completion.
+		ctx, cancel := context.WithTimeout(context.Background(), cfg.Web.ShutdownTimeout)
+		defer cancel()
+
+		// Asking listener to shutdown and shed load.
+		if err := api.Shutdown(ctx); err != nil {
+			api.Close()
+			return errors.Wrap(err, "could not stop server gracefully")
+		}
+	}
 
 	return nil
 }
