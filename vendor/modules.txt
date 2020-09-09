@@ -1,6 +1,12 @@
 # github.com/ardanlabs/conf v1.3.2
 ## explicit
 github.com/ardanlabs/conf
+# github.com/dimfeld/httptreemux/v5 v5.2.2
+## explicit
+github.com/dimfeld/httptreemux/v5
+# github.com/google/uuid v1.1.2
+## explicit
+github.com/google/uuid
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
