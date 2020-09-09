@@ -2,15 +2,16 @@ package handlers
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"math/rand"
 	"net/http"
+
+	"github.com/ardanlabs/service/foundation/web"
 )
 
 func readiness(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	if n := rand.Intn(100); n%2 == 0 {
-		return errors.New("some error")
+		return web.NewRequestError(errors.New("i trust this message"), http.StatusBadRequest)
 	}
 
 	status := struct {
@@ -18,5 +19,5 @@ func readiness(ctx context.Context, w http.ResponseWriter, r *http.Request) erro
 	}{
 		Status: "OK",
 	}
-	return json.NewEncoder(w).Encode(status)
+	return web.Respond(ctx, w, status, http.StatusOK)
 }

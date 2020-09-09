@@ -5,6 +5,7 @@ import (
 	"context"
 	"net/http"
 	"os"
+	"syscall"
 	"time"
 
 	"github.com/dimfeld/httptreemux/v5"
@@ -67,10 +68,16 @@ func (a *App) Handle(method string, path string, handler Handler, mw ...Middlewa
 		ctx := context.WithValue(r.Context(), KeyValues, &v)
 
 		if err := handler(ctx, w, r); err != nil {
-			// ??????????
+			a.SignalShutdown()
 			return
 		}
 	}
 
 	a.ContextMux.Handle(method, path, h)
+}
+
+// SignalShutdown is used to gracefully shutdown the app when an integrity
+// issue is identified.
+func (a *App) SignalShutdown() {
+	a.shutdown <- syscall.SIGTERM
 }
