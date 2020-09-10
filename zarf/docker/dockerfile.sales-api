@@ -29,6 +29,6 @@ CMD ["/app/sales-api"]
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.title="sales-api" \
       org.opencontainers.image.authors="William Kennedy <bill@ardanlabs.com>" \
-      org.opencontainers.image.source="https://github.com/ardanlabs/service/cmd/sales-api" \
+      org.opencontainers.image.source="https://github.com/ardanlabs/service/app/sales-api" \
       org.opencontainers.image.revision="${VCS_REF}" \
       org.opencontainers.image.vendor="Ardan Labs"

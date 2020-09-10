@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-api
+spec:
+  selector:
+    matchLabels:
+      app: sales-api
+  template:
+    metadata:
+      labels:
+        app: sales-api
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      containers:
+      - name: app
+        image: sales-api-amd64:1.0
+        env:
+        - name: SALES_DB_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: sales-api
+              key: db_host
+        - name: SALES_DB_DISABLE_TLS
+          valueFrom:
+            configMapKeyRef:
+              name: sales-api
+              key: db_disable_tls
+        ports:
+        - name: app
+          containerPort: 3000
+        - name: app-debug
+          containerPort: 4000
+        readinessProbe:
+          httpGet:
+            path: /readiness
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-api
+spec:
+  selector:
+    service: sales-api
+  ports:
+  - name: app
+    port: 3000
+    targetPort: app
+  - name: app-debug
+    port: 4000
+    targetPort: app-debug
+   
