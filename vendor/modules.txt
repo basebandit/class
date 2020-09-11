@@ -10,6 +10,17 @@ github.com/dimfeld/httptreemux/v5
 # github.com/google/uuid v1.1.2
 ## explicit
 github.com/google/uuid
+# github.com/jmoiron/sqlx v1.2.0
+## explicit
+github.com/jmoiron/sqlx
+github.com/jmoiron/sqlx/reflectx
+# github.com/lib/pq v1.8.0
+## explicit
+github.com/lib/pq
+github.com/lib/pq/oid
+github.com/lib/pq/scram
 # github.com/pkg/errors v0.9.1
 ## explicit
 github.com/pkg/errors
+# google.golang.org/appengine v1.6.6
+## explicit

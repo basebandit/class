@@ -2,22 +2,30 @@ package handlers
 
 import (
 	"context"
-	"errors"
-	"math/rand"
 	"net/http"
 
+	"github.com/ardanlabs/service/foundation/database"
 	"github.com/ardanlabs/service/foundation/web"
+	"github.com/jmoiron/sqlx"
 )
 
-func readiness(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
-	if n := rand.Intn(100); n%2 == 0 {
-		return web.NewRequestError(errors.New("i trust this message"), http.StatusBadRequest)
+type check struct {
+	db *sqlx.DB
+}
+
+func (c *check) readiness(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
+	status := "ok"
+	statusCode := http.StatusOK
+	if err := database.StatusCheck(ctx, c.db); err != nil {
+		status = "db not ready"
+		statusCode = http.StatusInternalServerError
 	}
 
-	status := struct {
-		Status string
+	health := struct {
+		Status string `json:"status"`
 	}{
-		Status: "OK",
+		Status: status,
 	}
-	return web.Respond(ctx, w, status, http.StatusOK)
+
+	return web.Respond(ctx, w, health, statusCode)
 }
