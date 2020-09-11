@@ -22,11 +22,6 @@ spec:
             configMapKeyRef:
               name: sales-api
               key: db_host
-        - name: SALES_DB_DISABLE_TLS
-          valueFrom:
-            configMapKeyRef:
-              name: sales-api
-              key: db_disable_tls
         ports:
         - name: app
           containerPort: 3000

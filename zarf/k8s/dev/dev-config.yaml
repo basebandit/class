@@ -4,4 +4,3 @@ metadata:
   name: sales-api
 data:
   db_host: 0.0.0.0
-  db_disable_tls: "true"
