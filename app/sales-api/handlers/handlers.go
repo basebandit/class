@@ -22,5 +22,16 @@ func API(build string, shutdown chan os.Signal, log *log.Logger, db *sqlx.DB, a 
 	}
 	app.Handle(http.MethodGet, "/readiness", check.readiness)
 
+	// Register user management and authentication endpoints.
+	u := userHandlers{
+		db:   db,
+		auth: a,
+	}
+	app.Handle(http.MethodGet, "/users", u.query, mid.Authenticate(a), mid.HasRole(auth.RoleAdmin))
+	app.Handle(http.MethodPost, "/users", u.create, mid.Authenticate(a), mid.HasRole(auth.RoleAdmin))
+	app.Handle(http.MethodGet, "/users/:id", u.queryByID, mid.Authenticate(a))
+	app.Handle(http.MethodPut, "/users/:id", u.update, mid.Authenticate(a), mid.HasRole(auth.RoleAdmin))
+	app.Handle(http.MethodDelete, "/users/:id", u.delete, mid.Authenticate(a), mid.HasRole(auth.RoleAdmin))
+
 	return app
 }
