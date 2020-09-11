@@ -7,6 +7,10 @@ test:
 	go test ./... -count=1
 	staticcheck ./...
 
+tidy:
+	go mod tidy
+	go mod vendor
+
 sales-api:
 	docker build \
 		-f zarf/docker/dockerfile.sales-api \
