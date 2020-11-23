@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # class
 Service class September
 =======
@@ -19,6 +18,3 @@ I attended the Ardan labs Remote Ultimate Service September Training and this is
 # Special Thanks
 - [Bill Kennedy](https://twitter.com/goinggodotnet)
 - [Ardan Labs](https://www.ardanlabs.com/)
-
-
->>>>>>> db2011c2a836db29539e4c748f0d3c813af77bf7
