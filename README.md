@@ -2,7 +2,7 @@
 Service class September
 =======
 # Ardan Labs Ultimate Go Service Training
-I attended the Ardan Labs Ultimate Go Service Remote Training on September. This is what I learned. Here is the source code that was used in the training. I highly recommend it to anyone looking to stretch his/her Go knowledge beyond the fundamentals and is looking for knowledge that will be of use in production environments.
+I attended the Ardan Labs Ultimate Go Service Remote Training on September courtesy of Bill Kennedy. This is what I learned. Here is the source code that was used in the training. I highly recommend it to anyone looking to stretch his/her Go knowledge beyond the fundamentals and is looking for knowledge that will be of use in production environments.
 
 # What I learned
 - Mental Models (How to efficiently structure your Go web services).
